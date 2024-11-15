@@ -2,7 +2,6 @@ import 'package:bezier_curve_scicomp/src/math/bezier/bezier_curve.dart';
 import 'package:bezier_curve_scicomp/src/math/models/points.dart';
 import 'package:flutter/material.dart';
 
-
 class BezierCanvasPainter extends CustomPainter {
   final BezierCurve bezierCurve;
   final int numPoints;
@@ -60,35 +59,34 @@ class BezierCanvasPainter extends CustomPainter {
     }
   }
 
-void _drawAxes(Canvas canvas, Size size) {
-  final axisPaint = Paint()
-    ..color = Colors.black
-    ..strokeWidth = 1;
+  void _drawAxes(Canvas canvas, Size size) {
+    final axisPaint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 1;
 
-  // Since we've translated the canvas to center the curve,
-  // we need to draw the axes accordingly.
+    // Since we've translated the canvas to center the curve,
+    // we need to draw the axes accordingly.
 
-  // Calculate the extents of the canvas in the translated coordinate system
-  double left = -dx;
-  double right = size.width - dx;
-  double top = -dy;
-  double bottom = size.height - dy;
+    // Calculate the extents of the canvas in the translated coordinate system
+    double left = -dx;
+    double right = size.width - dx;
+    double top = -dy;
+    double bottom = size.height - dy;
 
-  // Draw X-axis (horizontal line across the canvas)
-  canvas.drawLine(
-    Offset(left, 0),
-    Offset(right, 0),
-    axisPaint,
-  );
+    // Draw X-axis (horizontal line across the canvas)
+    canvas.drawLine(
+      Offset(left, 0),
+      Offset(right, 0),
+      axisPaint,
+    );
 
-  // Draw Y-axis (vertical line across the canvas)
-  canvas.drawLine(
-    Offset(0, top),
-    Offset(0, bottom),
-    axisPaint,
-  );
-}
-
+    // Draw Y-axis (vertical line across the canvas)
+    canvas.drawLine(
+      Offset(0, top),
+      Offset(0, bottom),
+      axisPaint,
+    );
+  }
 
   void _drawBezierCurve(Canvas canvas) {
     final paint = Paint()
@@ -97,8 +95,7 @@ void _drawAxes(Canvas canvas, Size size) {
       ..style = PaintingStyle.stroke;
 
     // Generate curve points using BezierCurve
-    List<Points> points =
-        bezierCurve.generateCurvePoints(numPoints: numPoints);
+    List<Points> points = bezierCurve.generateCurvePoints(numPoints: numPoints);
 
     // Create a path to draw the curve
     if (points.isNotEmpty) {

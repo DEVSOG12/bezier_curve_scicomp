@@ -17,5 +17,3 @@ class Points {
     this.y = y;
   }
 }
-
-

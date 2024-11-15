@@ -9,8 +9,7 @@ class BezierInteractiveScreen extends StatefulWidget {
   const BezierInteractiveScreen({super.key});
 
   @override
-  BezierInteractiveScreenState createState() =>
-      BezierInteractiveScreenState();
+  BezierInteractiveScreenState createState() => BezierInteractiveScreenState();
 }
 
 class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
@@ -38,10 +37,10 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String xEquation = getBezierEquationSymbolic(
-        'x', start.x, control1.x, control2.x, end.x);
-    String yEquation = getBezierEquationSymbolic(
-        'y', start.y, control1.y, control2.y, end.y);
+    String xEquation =
+        getBezierEquationSymbolic('x', start.x, control1.x, control2.x, end.x);
+    String yEquation =
+        getBezierEquationSymbolic('y', start.y, control1.y, control2.y, end.y);
     double xAtT = bezierCurve.evaluate(tValue).x;
     double yAtT = bezierCurve.evaluate(tValue).y;
 
@@ -98,6 +97,7 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(
+          key: const Key('control_point_1'),
           onTapUp: _onTapUp,
           onPanStart: _onPanStart,
           onPanUpdate: _onPanUpdate,
@@ -135,6 +135,7 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
           ),
           Text(
             't = ${tValue.toStringAsFixed(2)}',
+            key: const Key('tValueDisplay'),
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 10),
@@ -257,14 +258,18 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
+                key: const Key('xTextField'),
                 controller: xController,
                 decoration: const InputDecoration(labelText: 'X'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
               ),
               TextField(
+                key: const Key('yTextField'),
                 controller: yController,
                 decoration: const InputDecoration(labelText: 'Y'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
               ),
             ],
           ),

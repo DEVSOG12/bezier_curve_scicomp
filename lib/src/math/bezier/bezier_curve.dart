@@ -1,7 +1,6 @@
 import 'package:bezier_curve_scicomp/src/math/bezier_computation.dart';
 import 'package:bezier_curve_scicomp/src/math/models/points.dart';
 
-
 class BezierCurve {
   final Points p1; // Start point
   final Points p2; // Control point 1

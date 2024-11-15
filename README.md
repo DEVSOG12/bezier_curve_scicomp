@@ -7,6 +7,8 @@ This project provides an interactive visualization of cubic Bézier curves using
 This project is inspired by concepts learned in Math 330, Section 3.5 on Bézier Curves, taught by Prof. Wanda Strychalski at Case Western Reserve University. It demonstrates the mathematical properties and computations behind Bézier curves while offering a UI to explore them dynamically. Cool 🚀 
 
 ## Demo
+[Try it out!](https://bezier-curve-scicomp.web.app/)
+
 ![demo](demo.png)
 
 ## Mathematical Background
