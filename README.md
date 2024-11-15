@@ -1,10 +1,10 @@
-# Bézier Curve Interactive Visualization Project
+# Bézier Curve Interactive Visualization Playground
 
 ## Overview
 
 This project provides an interactive visualization of cubic Bézier curves using Flutter. The application allows users to modify control points and endpoints, view the resulting curve, and understand how Bézier curves work by displaying their mathematical equations in real-time.
 
-This project is inspired by concepts learned in Math 330, Section 3.5 on Bézier Curves, taught by Prof. Wanda Strychalski at Case Western Reserve University. It demonstrates the mathematical properties and computations behind Bézier curves while offering a user-friendly interface to explore them dynamically.
+This project is inspired by concepts learned in Math 330, Section 3.5 on Bézier Curves, taught by Prof. Wanda Strychalski at Case Western Reserve University. It demonstrates the mathematical properties and computations behind Bézier curves while offering a UI to explore them dynamically. Cool 🚀 
 
 ## Mathematical Background
 
@@ -12,30 +12,30 @@ This project is inspired by concepts learned in Math 330, Section 3.5 on Bézier
 
 A Bézier curve is a parametric curve frequently used in computer graphics, animations, and related fields to model smooth curves. In this project, we focus on cubic Bézier curves, which are defined by:
 
-- **Two endpoints**: \((x_1, y_1)\) and \((x_4, y_4)\).
-- **Two control points**: \((x_2, y_2)\) and \((x_3, y_3)\).
+- **Two endpoints**: $(x_1, y_1)$ and $(x_4, y_4)$.
+- **Two control points**: $(x_2, y_2)$ and $(x_3, y_3)$.
 
 The control points influence the direction and curvature of the Bézier curve but are not points on the curve itself.
 
 ### Mathematical Equations
 
-The cubic Bézier curve for \(0 \leq t \leq 1\) is given by:
+The cubic Bézier curve for $0 \leq t \leq 1$ is given by:
 
-\[
+$$
 x(t) = x_1 + b_x \cdot t + c_x \cdot t^2 + d_x \cdot t^3
-\]
-\[
+$$
+$$
 y(t) = y_1 + b_y \cdot t + c_y \cdot t^2 + d_y \cdot t^3
-\]
+$$
 
 where:
 
-\[
+$$
 b_x = 3(x_2 - x_1), \quad c_x = 3(x_3 - x_2) - b_x, \quad d_x = x_4 - x_1 - b_x - c_x
-\]
-\[
+$$
+$$
 b_y = 3(y_2 - y_1), \quad c_y = 3(y_3 - y_2) - b_y, \quad d_y = y_4 - y_1 - b_y - c_y
-\]
+$$
 
 This parameterization ensures a smooth curve between the endpoints, influenced by the control points' relative positions.
 
@@ -65,11 +65,11 @@ This parameterization ensures a smooth curve between the endpoints, influenced b
 
 ### Computing Bézier Coefficients
 
-The Bézier coefficients \(b_x, c_x, d_x, b_y, c_y, d_y\) are computed based on the positions of the control and endpoint coordinates. This calculation ensures that the curve follows a smooth path influenced by the control points.
+The Bézier coefficients $b_x, c_x, d_x, b_y, c_y, d_y$ are computed based on the positions of the control and endpoint coordinates. This calculation ensures that the curve follows a smooth path influenced by the control points.
 
 ### Curve Evaluation
 
-Given a parameter \(t\) in the range \([0, 1]\), the coordinates \((x(t), y(t))\) of a point on the curve are computed using cubic polynomial interpolation. As users modify the control points, the curve updates in real-time based on the recalculated coefficients.
+Given a parameter $t$ in the range $[0, 1]$, the coordinates $(x(t), y(t))$ of a point on the curve are computed using cubic polynomial interpolation. As users modify the control points, the curve updates in real-time based on the recalculated coefficients.
 
 ### User Interaction
 
@@ -82,10 +82,10 @@ Given a parameter \(t\) in the range \([0, 1]\), the coordinates \((x(t), y(t))\
 
 Consider an example Bézier curve defined by the points:
 
-- **Start Point**: \((-100, 0)\)
-- **Control Point 1**: \((-50, -50)\)
-- **Control Point 2**: \((50, 50)\)
-- **End Point**: \((100, 0)\)
+- **Start Point**: $(-100, 0)$
+- **Control Point 1**: $(-50, -50)$
+- **Control Point 2**: $(50, 50)$
+- **End Point**: $(100, 0)$
 
 The curve will be drawn centered on the origin, with the control points influencing the shape. Users can modify these points to observe changes to the curve and corresponding equations.
 
