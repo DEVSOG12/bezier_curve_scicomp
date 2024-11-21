@@ -1,3 +1,4 @@
+// main.dart
 import 'package:bezier_curve_scicomp/src/UI/bezier_curve_screen.dart';
 import 'package:flutter/material.dart';
 

@@ -1,3 +1,5 @@
+// points.dart
+
 class Points {
   double x;
   double y;
@@ -9,11 +11,13 @@ class Points {
     return 'Points{x: ${x.toStringAsFixed(2)}, y: ${y.toStringAsFixed(2)}}';
   }
 
-  void setX(double x) {
-    this.x = x;
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Points && other.x == x && other.y == y;
   }
 
-  void setY(double y) {
-    this.y = y;
-  }
+  @override
+  int get hashCode => x.hashCode ^ y.hashCode;
 }

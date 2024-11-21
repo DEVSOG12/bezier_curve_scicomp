@@ -1,0 +1,42 @@
+# Top horizontal curve
+-50,100
+-50,130
+50,130
+50,100
+---
+
+# Vertical line
+50,100
+50,50
+---
+
+# Middle horizontal line
+50,50
+0,50
+---
+
+# Bottom loop - First part
+0,50
+0,0
+25,-60
+50,-60
+---
+
+# Bottom loop - Second part
+50,-60
+75,-60
+75,0
+50,0
+---
+
+# Bottom loop - Closing
+50,0
+50,30
+25,30
+0,30
+---
+
+# Connect back to middle line
+0,30
+0,50
+

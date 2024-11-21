@@ -1,3 +1,4 @@
+// bezier_curve_screen.dart
 import 'package:bezier_curve_scicomp/src/math/bezier/bezier_curve.dart';
 import 'package:bezier_curve_scicomp/src/math/models/points.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,8 @@ class BezierInteractiveScreen extends StatefulWidget {
 }
 
 class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
-  late Points start, control1, control2, end;
   late BezierCurve bezierCurve;
+  late List<Points> fiveShapePoints;
 
   // Currently selected point for dragging
   Points? selectedPoint;
@@ -24,25 +25,59 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
   final GlobalKey _canvasKey = GlobalKey();
   BezierCanvasPainter? _bezierCanvasPainter;
 
-  @override
-  void initState() {
-    super.initState();
-    // Set initial points to create a centered curve
-    start = Points(-180, 5);
-    control1 = Points(-20, -220);
-    control2 = Points(60, 240);
-    end = Points(240, -5);
-    bezierCurve = BezierCurve(start, control1, control2, end);
-  }
+@override
+void initState() {
+  super.initState();
+
+  // Define the control points for each segment of the "5"
+  final List<Points> topCurve = [
+    Points(0, 50),   // Start point
+    Points(20, 70),  // Control point 1
+    Points(80, 70),  // Control point 2
+    Points(100, 50), // End point
+  ];
+
+  final List<Points> bottomLoop = [
+    Points(100, 30),  // Start point
+    Points(80, 10),   // Control point 1
+    Points(20, 10),   // Control point 2
+    Points(0, 30),    // End point
+  ];
+
+  final List<Points> verticalLine = [
+    Points(100, 50), // Start of vertical line
+    Points(100, 30), // End of vertical line
+  ];
+
+  // Create BézierCurve instances for curved sections
+  final BezierCurve topBezier = BezierCurve(topCurve);
+  final BezierCurve bottomBezier = BezierCurve(bottomLoop);
+
+  // Generate all points needed to render the "5"
+  fiveShapePoints = [
+    ...topBezier.generateCurvePoints(numPoints: 50),
+    ...verticalLine, // Vertical straight line
+    ...bottomBezier.generateCurvePoints(numPoints: 50),
+  ];
+
+  bezierCurve = BezierCurve([
+        Points(-100, 0),
+        Points(0, 100),
+        Points(100, 0),
+      ]);
+}
 
   @override
   Widget build(BuildContext context) {
-    String xEquation =
-        getBezierEquationSymbolic('x', start.x, control1.x, control2.x, end.x);
-    String yEquation =
-        getBezierEquationSymbolic('y', start.y, control1.y, control2.y, end.y);
-    double xAtT = bezierCurve.evaluate(tValue).x;
-    double yAtT = bezierCurve.evaluate(tValue).y;
+    String xEquation = getBezierEquationSymbolic(
+      'x',
+      bezierCurve.controlPoints.map((p) => p.x).toList(),
+    );
+    String yEquation = getBezierEquationSymbolic(
+      'y',
+      bezierCurve.controlPoints.map((p) => p.y).toList(),
+    );
+    Points pointAtT = bezierCurve.evaluate(tValue);
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +99,7 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
                     // Details area
                     SizedBox(
                       width: 300,
-                      child: _buildDetails(xEquation, yEquation, xAtT, yAtT),
+                      child: _buildDetails(xEquation, yEquation, pointAtT),
                     ),
                   ],
                 )
@@ -79,7 +114,7 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
                     // Details area
                     SizedBox(
                       height: 300,
-                      child: _buildDetails(xEquation, yEquation, xAtT, yAtT),
+                      child: _buildDetails(xEquation, yEquation, pointAtT),
                     ),
                   ],
                 );
@@ -90,6 +125,7 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
 
   Widget _buildCanvas() {
     _bezierCanvasPainter = BezierCanvasPainter(
+      
       bezierCurve: bezierCurve,
       tValue: tValue,
     );
@@ -97,7 +133,7 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(
-          key: const Key('control_point_1'),
+          key: const Key('canvasGestureDetector'),
           onTapUp: _onTapUp,
           onPanStart: _onPanStart,
           onPanUpdate: _onPanUpdate,
@@ -115,8 +151,7 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
     );
   }
 
-  Widget _buildDetails(
-      String xEquation, String yEquation, double xAtT, double yAtT) {
+  Widget _buildDetails(String xEquation, String yEquation, Points pointAtT) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -143,13 +178,20 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
             'Bézier Equations:',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          TexText(
-            'x(t) = $xEquation',
-            // textStyle: const TextStyle(fontSize: 16),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: TexText(
+              r'$x(t) = ' + xEquation + r'$',
+              style: const TextStyle(fontSize: 12),
+            ),
           ),
-          TexText(
-            'y(t) = $yEquation',
-            // textStyle: const TextStyle(fontSize: 16),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: TexText(
+              r'$y(t) = ' + yEquation + r'$',
+              style: const TextStyle(fontSize: 12),
+            
+            ),
           ),
           const SizedBox(height: 10),
           Text(
@@ -157,11 +199,11 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           Text(
-            'x(${tValue.toStringAsFixed(2)}) = ${xAtT.toStringAsFixed(2)}',
+            'x(${tValue.toStringAsFixed(2)}) = ${pointAtT.x.toStringAsFixed(2)}',
             style: const TextStyle(fontSize: 16),
           ),
           Text(
-            'y(${tValue.toStringAsFixed(2)}) = ${yAtT.toStringAsFixed(2)}',
+            'y(${tValue.toStringAsFixed(2)}) = ${pointAtT.y.toStringAsFixed(2)}',
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 10),
@@ -169,32 +211,60 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
             'Control Points:',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          Text(
-            'P1 (Start): (${start.x.toStringAsFixed(2)}, ${start.y.toStringAsFixed(2)})',
-            style: const TextStyle(fontSize: 16),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: bezierCurve.controlPoints.length,
+            itemBuilder: (context, index) {
+              Points point = bezierCurve.controlPoints[index];
+              return Text(
+                'P${index + 1}: (${point.x.toStringAsFixed(2)}, ${point.y.toStringAsFixed(2)})',
+                style: const TextStyle(fontSize: 16),
+              );
+            },
           ),
-          Text(
-            'P2 (Control 1): (${control1.x.toStringAsFixed(2)}, ${control1.y.toStringAsFixed(2)})',
-            style: const TextStyle(fontSize: 16),
-          ),
-          Text(
-            'P3 (Control 2): (${control2.x.toStringAsFixed(2)}, ${control2.y.toStringAsFixed(2)})',
-            style: const TextStyle(fontSize: 16),
-          ),
-          Text(
-            'P4 (End): (${end.x.toStringAsFixed(2)}, ${end.y.toStringAsFixed(2)})',
-            style: const TextStyle(fontSize: 16),
+          const SizedBox(height: 10),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: _addControlPoint,
+                child: const Text('Add Control Point'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _removeControlPoint,
+                child: const Text('Remove Control Point'),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
+  void _addControlPoint() {
+    setState(() {
+      // Add a new point at a default position or at the end
+      Points lastPoint = bezierCurve.controlPoints.last;
+      Points newPoint = Points(lastPoint.x + 50, lastPoint.y);
+      bezierCurve.addControlPoint(newPoint);
+    });
+  }
+
+  void _removeControlPoint() {
+    setState(() {
+      if (bezierCurve.controlPoints.length > 2) {
+        // Ensure at least 2 points remain
+        bezierCurve.removeControlPoint(bezierCurve.controlPoints.length - 1);
+      }
+    });
+  }
+
   void _onPanStart(DragStartDetails details) {
     // Adjust touch point coordinates
     Offset adjustedTouchPoint = _getAdjustedTouchPoint(details.localPosition);
 
-    // Determine if the touch is near any control or end point
+    // Determine if the touch is near any control point
     selectedPoint = _getPointNearTouch(adjustedTouchPoint);
   }
 
@@ -206,7 +276,7 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
         selectedPoint!.y += details.delta.dy;
 
         // Update the curve with the new positions
-        bezierCurve = BezierCurve(start, control1, control2, end);
+        bezierCurve = BezierCurve(bezierCurve.controlPoints);
       });
     }
   }
@@ -230,17 +300,13 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
 
   Points? _getPointNearTouch(Offset touchPoint) {
     const double proximityThreshold = 15.0;
-    // Check if touch is near any of the points
-    if (_isPointNear(touchPoint, start, proximityThreshold)) return start;
-    if (_isPointNear(touchPoint, control1, proximityThreshold)) return control1;
-    if (_isPointNear(touchPoint, control2, proximityThreshold)) return control2;
-    if (_isPointNear(touchPoint, end, proximityThreshold)) return end;
+    for (Points point in bezierCurve.controlPoints) {
+      if ((touchPoint.dx - point.x).abs() < proximityThreshold &&
+          (touchPoint.dy - point.y).abs() < proximityThreshold) {
+        return point;
+      }
+    }
     return null;
-  }
-
-  bool _isPointNear(Offset touchPoint, Points point, double threshold) {
-    return (touchPoint.dx - point.x).abs() < threshold &&
-        (touchPoint.dy - point.y).abs() < threshold;
   }
 
   void _showEditPointDialog(Points point) {
@@ -288,7 +354,7 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
                   setState(() {
                     point.x = x;
                     point.y = y;
-                    bezierCurve = BezierCurve(start, control1, control2, end);
+                    bezierCurve = BezierCurve(bezierCurve.controlPoints);
                   });
                   Navigator.of(context).pop();
                 } else {
@@ -307,13 +373,30 @@ class BezierInteractiveScreenState extends State<BezierInteractiveScreen> {
   }
 
   // Helper method to generate the Bézier equation string for x(t) or y(t) with symbolic t
-  String getBezierEquationSymbolic(
-      String axis, double p0, double p1, double p2, double p3) {
-    String c0 = p0.toStringAsFixed(2);
-    String c1 = p1.toStringAsFixed(2);
-    String c2 = p2.toStringAsFixed(2);
-    String c3 = p3.toStringAsFixed(2);
+  String getBezierEquationSymbolic(String axis, List<double> controlValues) {
+    int n = controlValues.length - 1;
+    List<String> terms = [];
 
-    return '($c0) * (1 - t)^3 + 3 * ($c1) * (1 - t)^2 * t + 3 * ($c2) * (1 - t) * t^2 + ($c3) * t^3';
+    for (int i = 0; i <= n; i++) {
+      double coeff = controlValues[i];
+      int binCoeff = _binomialCoefficient(n, i);
+      String term = '$binCoeff \\times ($coeff) \\times (1 - t)^{${n - i}} \\times t^$i';
+      terms.add(term);
+    }
+
+    return terms.join(' + ');
+  }
+
+  int _binomialCoefficient(int n, int k) {
+    return _factorial(n) ~/ (_factorial(k) * _factorial(n - k));
+  }
+
+  int _factorial(int n) {
+    if (n <= 1) return 1;
+    int result = 1;
+    for (int i = 2; i <= n; i++) {
+      result *= i;
+    }
+    return result;
   }
 }

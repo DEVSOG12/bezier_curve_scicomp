@@ -10,10 +10,9 @@ void main() {
       await tester
           .pumpWidget(const MaterialApp(home: BezierInteractiveScreen()));
 
-      expect(find.textContaining('P1 (Start)'), findsOneWidget);
-      expect(find.textContaining('P2 (Control 1)'), findsOneWidget);
-      expect(find.textContaining('P3 (Control 2)'), findsOneWidget);
-      expect(find.textContaining('P4 (End)'), findsOneWidget);
+      expect(find.textContaining('P1:'), findsOneWidget);
+      expect(find.textContaining('P2:'), findsOneWidget);
+      expect(find.textContaining('P3:'), findsOneWidget);
     });
 
     testWidgets('Slider updates tValue and displays corresponding coordinates',
@@ -24,10 +23,6 @@ void main() {
       // Initial value
       expect(find.byKey(const Key('tValueDisplay')), findsOneWidget);
       expect(find.text('t = 0.00'), findsOneWidget);
-
-      // Drag slider to change value
-      await tester.drag(find.byType(Slider), const Offset(50.0, 0.0));
-      await tester.pumpAndSettle();
 
       // Drag slider to change value
       await tester.drag(find.byType(Slider), const Offset(50.0, 0.0));
@@ -44,52 +39,54 @@ void main() {
       expect(tValue, greaterThan(0.00));
       expect(tValue, lessThanOrEqualTo(1.00));
     });
-  testWidgets('Clicking on control point allows editing', (WidgetTester tester) async {
-  await tester.pumpWidget(const MaterialApp(home: BezierInteractiveScreen()));
 
-  // Find the CustomPaint widget
-  final customPaintFinder = find.byType(CustomPaint);
-  expect(customPaintFinder, findsOneWidget);
+    testWidgets('Clicking on control point allows editing',
+        (WidgetTester tester) async {
+      await tester
+          .pumpWidget(const MaterialApp(home: BezierInteractiveScreen()));
 
-  // Get the RenderBox of the canvas
-  final RenderBox canvasBox = tester.firstRenderObject(customPaintFinder);
-  final Offset canvasPosition = canvasBox.localToGlobal(Offset.zero);
-  final Size canvasSize = canvasBox.size;
+      // Find the CustomPaint widget
+      final customPaintFinder = find.byType(CustomPaint);
+      expect(customPaintFinder, findsOneWidget);
 
-  // Helper function to convert logical coordinates to screen coordinates
-  Offset logicalToScreen(Points point) {
-    final double screenX = canvasPosition.dx + (canvasSize.width / 2) + point.x;
-    final double screenY = canvasPosition.dy + (canvasSize.height / 2) - point.y;
-    return Offset(screenX, screenY);
-  }
+      // Get the RenderBox of the canvas
+      final RenderBox canvasBox = tester.firstRenderObject(customPaintFinder);
+      final Offset canvasPosition = canvasBox.localToGlobal(Offset.zero);
+      final Size canvasSize = canvasBox.size;
 
-  // Control point to test (e.g., control2)
-  final Points controlPoint = Points(60, 240);
+      // Helper function to convert logical coordinates to screen coordinates
+      Offset logicalToScreen(Points point) {
+        final double screenX =
+            canvasPosition.dx + (canvasSize.width / 2) + point.x;
+        final double screenY =
+            canvasPosition.dy + (canvasSize.height / 2) - point.y;
+        return Offset(screenX, screenY);
+      }
 
-  // Calculate screen position of the control point
-  final Offset controlPointScreenPosition = logicalToScreen(controlPoint);
+      // Control point to test (e.g., control2)
+      final Points controlPoint = Points(-20, -220);
 
-  // Simulate tap at the control point position
-  await tester.tapAt(controlPointScreenPosition);
-  await tester.pumpAndSettle();
+      // Calculate screen position of the control point
+      final Offset controlPointScreenPosition = logicalToScreen(controlPoint);
 
-  // Check if edit dialog appears
-  expect(find.text('Edit Point'), findsOneWidget);
-  expect(find.text('X'), findsOneWidget);
-  expect(find.text('Y'), findsOneWidget);
+      // Simulate tap at the control point position
+      await tester.tapAt(controlPointScreenPosition);
+      await tester.pumpAndSettle();
 
-  // Enter new values
-  await tester.enterText(find.byType(TextField).first, '100');
-  await tester.enterText(find.byType(TextField).last, '100');
-  await tester.tap(find.text('OK'));
-  await tester.pumpAndSettle();
+      // Check if edit dialog appears
+      expect(find.text('Edit Point'), findsOneWidget);
 
-  // Verify new coordinates
-  expect(
-    find.textContaining('P3 (Control 2): (100.00, 100.00)'),
-    findsOneWidget,
-  );
-});
+      // Enter new values
+      await tester.enterText(find.byKey(const Key('xTextField')), '100');
+      await tester.enterText(find.byKey(const Key('yTextField')), '100');
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
 
+      // Verify new coordinates in the details section
+      expect(
+        find.textContaining('P2 (Control 1): (100.00, 100.00)'),
+        findsOneWidget,
+      );
+    });
   });
 }

@@ -13,7 +13,7 @@ void main() {
       final Points p3 = Points(2, 3);
       final Points p4 = Points(4, 0);
 
-      final BezierComputation bezier = BezierComputation(p1, p2, p3, p4);
+      final BezierComputation bezier = BezierComputation([p1, p2, p3, p4]);
       final Points result = bezier.calculatePoint(0.0);
 
       expect(result.x, equals(p1.x));
@@ -28,7 +28,7 @@ void main() {
       final Points p3 = Points(2, 3);
       final Points p4 = Points(4, 0);
 
-      final BezierComputation bezier = BezierComputation(p1, p2, p3, p4);
+      final BezierComputation bezier = BezierComputation([p1, p2, p3, p4]);
       final Points result = bezier.calculatePoint(1.0);
 
       expect(result.x, equals(p4.x));
@@ -43,7 +43,7 @@ void main() {
       final Points p3 = Points(2, 3);
       final Points p4 = Points(4, 0);
 
-      final BezierComputation bezier = BezierComputation(p1, p2, p3, p4);
+      final BezierComputation bezier = BezierComputation([p1, p2, p3, p4]);
       final Points result = bezier.calculatePoint(0.5);
 
       // Values t = 0.5
@@ -57,7 +57,7 @@ void main() {
       final Points p3 = Points(2, 3);
       final Points p4 = Points(4, 0);
 
-      final BezierCurve curve = BezierCurve(p1, p2, p3, p4);
+      final BezierCurve curve = BezierCurve([p1, p2, p3, p4]);
       final List<Points> points = curve.generateCurvePoints(numPoints: 50);
 
       expect(points.length, equals(51)); // 0 to 50 (inclusive)
